@@ -88,28 +88,9 @@
         <PathLengthRatioCut>1.012</PathLengthRatioCut>
         <ShowerWidthRatioCut>0.2</ShowerWidthRatioCut>
     </algorithm>
-    <algorithm type = "LArCandidateVertexCreation">
-        <InputClusterListNames>ClustersU ClustersV ClustersW</InputClusterListNames>
-        <OutputVertexListName>CandidateVertices3D</OutputVertexListName>
-        <ReplaceCurrentVertexList>true</ReplaceCurrentVertexList>
-        <EnableCrossingCandidates>false</EnableCrossingCandidates>
-        <ReducedCandidates>true</ReducedCandidates>
-    </algorithm>
-    <algorithm type = "LArBdtVertexSelection">
-        <InputCaloHitListNames>CaloHitListU CaloHitListV CaloHitListW</InputCaloHitListNames>
-        <InputClusterListNames>ClustersU ClustersV ClustersW</InputClusterListNames>
+   <algorithm type = "LArCheatingVertexCreation">
         <OutputVertexListName>NeutrinoVertices3D</OutputVertexListName>
         <ReplaceCurrentVertexList>true</ReplaceCurrentVertexList>
-        <MvaFileName>PandoraMVAData/PandoraBdt_v03_20_00.xml</MvaFileName>
-        <RegionMvaName>DUNEFD_VertexSelectionRegion</RegionMvaName>
-        <VertexMvaName>DUNEFD_VertexSelectionVertex</VertexMvaName>
-        <FeatureTools>
-            <tool type = "LArEnergyKickFeature"/>
-            <tool type = "LArLocalAsymmetryFeature"/>
-            <tool type = "LArGlobalAsymmetryFeature"/>
-            <tool type = "LArShowerAsymmetryFeature"/>
-            <tool type = "LArRPhiFeature"/>
-        </FeatureTools>
     </algorithm>
     <algorithm type = "LArCutClusterCharacterisation">
         <InputClusterListNames>ClustersU ClustersV ClustersW</InputClusterListNames>
@@ -269,14 +250,6 @@
         <DaughterListNames>ClustersU ClustersV ClustersW</DaughterListNames>
     </algorithm>
 
-<algorithm type = "LArCheatingCCElectronRefinement">
-<MCParticleListName>Input</MCParticleListName>
-<PfoListName>ShowerParticles3D</PfoListName>
-<TrackPfoListName>TrackParticles3D</TrackPfoListName>
-<CaloHitListName>CaloHitList2D</CaloHitListName>
-<ClusterListNames>ClustersU ClustersV ClustersW</ClusterListNames>
-</algorithm>
-
     <!-- ThreeDHitAlgorithms -->
     <algorithm type = "LArCutPfoCharacterisation">
         <TrackPfoListName>TrackParticles3D</TrackPfoListName>
@@ -289,7 +262,7 @@
     </algorithm>
     <algorithm type = "LArThreeDHitCreation">
         <InputPfoListName>TrackParticles3D</InputPfoListName>
-        <OutputCaloHitListName>TrackCaloHits3DTemp</OutputCaloHitListName>
+        <OutputCaloHitListName>TrackCaloHits3D</OutputCaloHitListName>
         <OutputClusterListName>TrackClusters3D</OutputClusterListName>
         <HitCreationTools>
             <tool type = "LArClearTransverseTrackHits"><MinViews>3</MinViews></tool>
@@ -303,7 +276,7 @@
     </algorithm>
     <algorithm type = "LArThreeDHitCreation">
         <InputPfoListName>ShowerParticles3D</InputPfoListName>
-        <OutputCaloHitListName>ShowerCaloHits3DTemp</OutputCaloHitListName>
+        <OutputCaloHitListName>ShowerCaloHits3D</OutputCaloHitListName>
         <OutputClusterListName>ShowerClusters3D</OutputClusterListName>
         <HitCreationTools>
             <tool type = "LArThreeViewShowerHits"/>
@@ -327,15 +300,55 @@
         <AddHitsAsIsolated>true</AddHitsAsIsolated>
     </algorithm>
 
-<algorithm type = "LArCheatingCCElectronRefinement">
-  <MCParticleListName>Input</MCParticleListName>
-  <ShowerPfoListName>ShowerParticles3D</ShowerPfoListName>
-  <TrackPfoListName>TrackParticles3D</TrackPfoListName>
-  <CaloHitListName>CaloHitList2D</CaloHitListName>
-  <ClusterListNames>ClustersU ClustersV ClustersW</ClusterListNames>
-  <MaxOpeningAngle>10</MaxOpeningAngle>
-  <CompletenessMode>false</CompletenessMode>
+<!--algorithm type = "LArVisualMonitoring">
+  <PfoListNames>ShowerParticles3D TrackParticles3D</PfoListNames>
+  <ShowPfoHierarchy>false</ShowPfoHierarchy>
+  <ShowDetector>true</ShowDetector>
+</algorithm-->
+
+<!-- ShowerStartRefinementAlgorithms -->
+<algorithm type = "LArShowerStartRefinement">
+<BinSize>0.017</BinSize>
+  <PfoListNames>TrackParticles3D ShowerParticles3D</PfoListNames>
+  <NeutrinoVertexListName>NeutrinoVertices3D</NeutrinoVertexListName>
+  <DaughterListNames>ClustersU ClustersV ClustersW TrackClusters3D ShowerClusters3D TrackParticles3D ShowerParticles3D</DaughterListNames>
+  <ShowerStartRefinementTools>
+    <tool type = "LArGammaStartRefinement">
+      <DistanceToLine>0.75</DistanceToLine>
+      <MaxFittingsHits>15</MaxFittingsHits>
+      <MacroSlidingFitWindow>10</MacroSlidingFitWindow>
+      <MicroSlidingFitWindow>10</MicroSlidingFitWindow>
+      <MinShowerOpeningAngle>2</MinShowerOpeningAngle>
+      <MinSigmaDeviation>1</MinSigmaDeviation> <!-- trying to not let the vertex go too far... -->
+      <HitConnectionDistance>0.75</HitConnectionDistance>
+      <ShowerSlidingFitWindow>1000</ShowerSlidingFitWindow>
+      <HitInitialHitsFound>7</HitInitialHitsFound>
+      <MolliereRadius>4.5</MolliereRadius>
+      <PathwaySearchRegion>10</PathwaySearchRegion>
+      <MaxSeparation>5</MaxSeparation>
+      <MaxAngularDeviation>2</MaxAngularDeviation>
+    </tool>
+    <tool type = "LArElectronStartRefinement">
+      <DistanceToLine>0.75</DistanceToLine>
+      <MaxFittingsHits>15</MaxFittingsHits>
+      <MaxCoincideneTransverseSeparation>5.0</MaxCoincideneTransverseSeparation>
+      <HitInitialHitsFound>7</HitInitialHitsFound>
+      <MacroSlidingFitWindow>10</MacroSlidingFitWindow>
+      <MicroSlidingFitWindow>10</MicroSlidingFitWindow>
+      <MinShowerOpeningAngle>2</MinShowerOpeningAngle>
+      <MinSigmaDeviation>1</MinSigmaDeviation>
+      <HitConnectionDistance>0.75</HitConnectionDistance>
+      <ShowerSlidingFitWindow>1000</ShowerSlidingFitWindow>
+      <MolliereRadius>4.5</MolliereRadius>
+      <PathwaySearchRegion>10</PathwaySearchRegion>
+      <MaxSeparation>5</MaxSeparation>
+      <MaxAngularDeviation>2</MaxAngularDeviation>
+      <MoveVertexMode>true</MoveVertexMode>
+    </tool>
+  </ShowerStartRefinementTools>
 </algorithm>
+
+<!-- REDO 3D HIT CREATION -->
 
 <algorithm type = "LArThreeDHitRemovalAlgorithm">
   <PfoListNames>ShowerParticles3D TrackParticles3D</PfoListNames>
@@ -379,6 +392,12 @@
   </HitCreationTools>
 </algorithm>
 
+<!--algorithm type = "LArVisualMonitoring">
+  <PfoListNames>ShowerParticles3D TrackParticles3D</PfoListNames>
+  <ShowPfoHierarchy>false</ShowPfoHierarchy>
+  <ShowDetector>true</ShowDetector>
+</algorithm-->
+
     <!-- NeutrinoAlgorithms -->
     <algorithm type = "LArNeutrinoCreation">
        <InputVertexListName>NeutrinoVertices3D</InputVertexListName>
@@ -398,6 +417,11 @@
         <NeutrinoPfoListName>NeutrinoParticles3D</NeutrinoPfoListName>
         <OutputVertexListName>DaughterVertices3D</OutputVertexListName>
     </algorithm>
+
+<algorithm type = "LArListMerging">
+<SourceVertexListNames>GammaVertices</SourceVertexListNames>
+<TargetVertexListNames>DaughterVertices3D</TargetVertexListNames>
+</algorithm>
 
     <algorithm type = "LArBdtPfoCharacterisation">
         <TrackPfoListName>TrackParticles3D</TrackPfoListName>

@@ -275,14 +275,6 @@
         <DaughterListNames>ClustersU ClustersV ClustersW</DaughterListNames>
     </algorithm>
 
-<algorithm type = "LArCheatingCCElectronRefinement">
-<MCParticleListName>Input</MCParticleListName>
-<PfoListName>ShowerParticles3D</PfoListName>
-<TrackPfoListName>TrackParticles3D</TrackPfoListName>
-<CaloHitListName>CaloHitList2D</CaloHitListName>
-<ClusterListNames>ClustersU ClustersV ClustersW</ClusterListNames>
-</algorithm>
-
     <!-- ThreeDHitAlgorithms -->
     <algorithm type = "LArCutPfoCharacterisation">
         <TrackPfoListName>TrackParticles3D</TrackPfoListName>
@@ -295,7 +287,7 @@
     </algorithm>
     <algorithm type = "LArThreeDHitCreation">
         <InputPfoListName>TrackParticles3D</InputPfoListName>
-        <OutputCaloHitListName>TrackCaloHits3D</OutputCaloHitListName>
+        <OutputCaloHitListName>TrackCaloHits3DTemp</OutputCaloHitListName>
         <OutputClusterListName>TrackClusters3D</OutputClusterListName>
         <HitCreationTools>
             <tool type = "LArClearTransverseTrackHits"><MinViews>3</MinViews></tool>
@@ -309,7 +301,7 @@
     </algorithm>
     <algorithm type = "LArThreeDHitCreation">
         <InputPfoListName>ShowerParticles3D</InputPfoListName>
-        <OutputCaloHitListName>ShowerCaloHits3D</OutputCaloHitListName>
+        <OutputCaloHitListName>ShowerCaloHits3DTemp</OutputCaloHitListName>
         <OutputClusterListName>ShowerClusters3D</OutputClusterListName>
         <HitCreationTools>
             <tool type = "LArThreeViewShowerHits"/>
@@ -332,6 +324,60 @@
         <DaughterListNames>ClustersU ClustersV ClustersW</DaughterListNames>
         <AddHitsAsIsolated>true</AddHitsAsIsolated>
     </algorithm>
+
+<algorithm type = "LArCheatingCCElectronRefinement">
+  <MCParticleListName>Input</MCParticleListName>
+  <ShowerPfoListName>ShowerParticles3D</ShowerPfoListName>
+  <TrackPfoListName>TrackParticles3D</TrackPfoListName>
+  <CaloHitListName>CaloHitList2D</CaloHitListName>
+  <ClusterListNames>ClustersU ClustersV ClustersW</ClusterListNames>
+  <MaxOpeningAngle>10</MaxOpeningAngle>
+  <CompletenessMode>false</CompletenessMode>
+  <ExtensionMode>true</ExtensionMode>
+  <AddInSubdominantHits>false</AddInSubdominantHits>
+</algorithm>
+
+<algorithm type = "LArThreeDHitRemovalAlgorithm">
+  <PfoListNames>ShowerParticles3D TrackParticles3D</PfoListNames>
+</algorithm>
+
+<algorithm type = "LArListDeletion">
+<ClusterListNames>TrackClusters3D ShowerClusters3D</ClusterListNames>
+</algorithm>
+
+<algorithm type = "LArCutPfoCharacterisation">
+    <TrackPfoListName>TrackParticles3D</TrackPfoListName>
+    <ShowerPfoListName>ShowerParticles3D</ShowerPfoListName>
+    <PostBranchAddition>true</PostBranchAddition>
+    <UseThreeDInformation>false</UseThreeDInformation>
+    <MaxShowerLengthCut>500.</MaxShowerLengthCut>
+    <VertexDistanceRatioCut>500.</VertexDistanceRatioCut>
+    <DTDLWidthRatioCut>0.08</DTDLWidthRatioCut>
+</algorithm>
+<algorithm type = "LArThreeDHitCreation">
+  <InputPfoListName>TrackParticles3D</InputPfoListName>
+  <OutputCaloHitListName>TrackCaloHits3D</OutputCaloHitListName>
+  <OutputClusterListName>TrackClusters3D</OutputClusterListName>
+  <HitCreationTools>
+    <tool type = "LArClearTransverseTrackHits"><MinViews>3</MinViews></tool>
+    <tool type = "LArClearLongitudinalTrackHits"><MinViews>3</MinViews></tool>
+    <tool type = "LArMultiValuedLongitudinalTrackHits"><MinViews>3</MinViews></tool>
+    <tool type = "LArMultiValuedTransverseTrackHits"><MinViews>3</MinViews></tool>
+    <tool type = "LArClearTransverseTrackHits"><MinViews>2</MinViews></tool>
+    <tool type = "LArClearLongitudinalTrackHits"><MinViews>2</MinViews></tool>
+    <tool type = "LArMultiValuedLongitudinalTrackHits"><MinViews>2</MinViews></tool>
+  </HitCreationTools>
+</algorithm>
+<algorithm type = "LArThreeDHitCreation">
+  <InputPfoListName>ShowerParticles3D</InputPfoListName>
+  <OutputCaloHitListName>ShowerCaloHits3D</OutputCaloHitListName>
+  <OutputClusterListName>ShowerClusters3D</OutputClusterListName>
+  <HitCreationTools>
+    <tool type = "LArThreeViewShowerHits"/>
+    <tool type = "LArTwoViewShowerHits"/>
+    <tool type = "LArDeltaRayShowerHits"/>
+  </HitCreationTools>
+</algorithm>
 
     <!-- NeutrinoAlgorithms -->
     <algorithm type = "LArNeutrinoCreation">
